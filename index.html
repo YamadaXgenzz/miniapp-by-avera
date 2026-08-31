@@ -1859,46 +1859,53 @@ if(tg){
    PARAMETER MINI APP
 ========================================================= */
 
-function qp(k){
+var q = new URLSearchParams(location.search);
 
+function dec(k, def){
   try{
-
-    return new URLSearchParams(
-      window.location.search
-    ).get(k) || "";
-
+    var v = q.get(k);
+    return v !== null
+      ? decodeURIComponent(v)
+      : (def || "");
   }catch(e){
-
-    return "";
-
+    return q.get(k) || def || "";
   }
-
 }
 
+var tgUser =
+  (tg && tg.initDataUnsafe && tg.initDataUnsafe.user)
+    ? tg.initDataUnsafe.user
+    : {};
 
-/*
-  CONTOH:
+var name = dec(
+  "name",
+  tgUser.first_name || "Member"
+);
 
-  ?role=pemilik
-  &uid=123456789
-  &owners=@ownerku
-  &bot=@namabot
-*/
+var role = (
+  dec("role", "user") || "user"
+).toLowerCase();
 
-var ROLE =
-  (qp("role") || "user")
-    .toLowerCase();
+var uid = dec(
+  "uid",
+  tgUser.id
+    ? String(tgUser.id)
+    : "-"
+);
 
-var UID =
-  qp("uid");
+var owners = dec(
+  "owners",
+  "@AveraEnv"
+).split(",")
+ .map(function(s){
+   return s.trim();
+ })
+ .filter(Boolean);
 
-var OWNERS =
-  qp("owners");
-
-var BOTU =
-  (qp("bot") || "")
-    .replace("@","");
-
+var botName = dec(
+  "bot",
+  "@UbotBybabehbot"
+);
 
 /* =========================================================
    ROLE
@@ -1919,47 +1926,22 @@ const ROLE_MAP = {
 
 };
 
-const ROLE_NAME =
-  ROLE_MAP[ROLE] ||
-  ROLE.toUpperCase() ||
+const roleName =
+  ROLE_MAP[role] ||
+  role.toUpperCase() ||
   "USER";
-
-
-/* =========================================================
-   TELEGRAM USER
-========================================================= */
-
-let telegramUser = null;
-
-if(
-  tg &&
-  tg.initDataUnsafe &&
-  tg.initDataUnsafe.user
-){
-
-  telegramUser =
-    tg.initDataUnsafe.user;
-
-}
-
-const TELEGRAM_NAME =
-  telegramUser &&
-  telegramUser.first_name
-    ? telegramUser.first_name
-    : "Member";
 
 
 /* =========================================================
    OWNER
 ========================================================= */
 
-let FIRST_OWNER = "";
+let firstOwner = "";
 
-if(OWNERS){
+if(owners.length > 0){
 
-  FIRST_OWNER =
-    OWNERS
-      .split(",")[0]
+  firstOwner =
+    owners[0]
       .replace("@","")
       .trim();
 
@@ -1988,27 +1970,27 @@ function setText(id,value){
 
 setText(
   "username",
-  TELEGRAM_NAME
+  name
 );
 
 setText(
   "userid",
-  "ID: " + (UID || "-")
+  "ID: " + uid
 );
 
 setText(
   "roleBadge",
-  ROLE_NAME
+  roleName
 );
 
 setText(
   "avatar",
-  TELEGRAM_NAME.charAt(0).toUpperCase()
+  name.charAt(0).toUpperCase()
 );
 
 setText(
   "headerSubtitle",
-  "Login sebagai " + ROLE_NAME
+  "Login sebagai " + roleName
 );
 
 
@@ -2016,32 +1998,32 @@ setText(
 
 setText(
   "profileName",
-  TELEGRAM_NAME
+  name
 );
 
 setText(
   "profileId",
-  "ID: " + (UID || "-")
+  "ID: " + uid
 );
 
 setText(
   "profileRole",
-  ROLE_NAME
+  roleName
 );
 
 setText(
   "profileAvatar",
-  TELEGRAM_NAME.charAt(0).toUpperCase()
+  name.charAt(0).toUpperCase()
 );
 
 setText(
   "statUid",
-  UID || "-"
+  uid
 );
 
 setText(
   "statRole",
-  ROLE_NAME
+  roleName
 );
 
 
@@ -2049,20 +2031,22 @@ setText(
 
 setText(
   "settingsRole",
-  ROLE_NAME
+  roleName
 );
 
 setText(
   "settingsBot",
-  BOTU ? "@" + BOTU : "-"
+  botName
 );
 
 setText(
   "settingsOwner",
-  FIRST_OWNER
-    ? "@" + FIRST_OWNER
+  firstOwner
+    ? "@" + firstOwner
     : "-"
 );
+
+
 
 
 /* =========================================================
