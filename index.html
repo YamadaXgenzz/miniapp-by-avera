@@ -2915,6 +2915,42 @@ console.log(
   "===================================="
 );
 
+/* =========================================================
+   LOGIC TOMBOL ORDER & SUPPORT
+========================================================= */
+
+// Ambil data owner dari variabel yang sudah ada di script sebelumnya
+// Jika firstOwner kosong, gunakan default "AveraEnv"
+const targetOwner = firstOwner || "AveraEnv"; 
+const targetSupport = dec("support", "AveraSupport"); 
+
+function bukaLinkTelegram(username) {
+    if (!username) {
+        alert("Kontak tidak tersedia.");
+        return;
+    }
+    // Bersihkan username dari @
+    const cleanUser = username.replace('@', '').trim();
+    const url = `https://t.me/${cleanUser}`;
+    
+    // Cek apakah dibuka di Telegram Mini App atau Browser biasa
+    if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(url);
+    } else {
+        window.open(url, '_blank');
+    }
+}
+
+// Sambungkan fungsi ke tombol berdasarkan ID yang kamu temukan
+document.getElementById('orderButton').addEventListener('click', function() {
+    bukaLinkTelegram(targetOwner);
+});
+
+document.getElementById('supportButton').addEventListener('click', function() {
+    bukaLinkTelegram(targetSupport);
+});
+
+
 </script>
 
 </body>
