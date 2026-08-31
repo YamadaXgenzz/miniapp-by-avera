@@ -1859,53 +1859,46 @@ if(tg){
    PARAMETER MINI APP
 ========================================================= */
 
-var q = new URLSearchParams(location.search);
+function qp(k){
 
-function dec(k, def){
   try{
-    var v = q.get(k);
-    return v !== null
-      ? decodeURIComponent(v)
-      : (def || "");
+
+    return new URLSearchParams(
+      window.location.search
+    ).get(k) || "";
+
   }catch(e){
-    return q.get(k) || def || "";
+
+    return "";
+
   }
+
 }
 
-var tgUser =
-  (tg && tg.initDataUnsafe && tg.initDataUnsafe.user)
-    ? tg.initDataUnsafe.user
-    : {};
 
-var name = dec(
-  "name",
-  tgUser.first_name || "Kak"
-);
+/*
+  CONTOH:
 
-var role = (
-  dec("role", "user") || "user"
-).toLowerCase();
+  ?role=pemilik
+  &uid=123456789
+  &owners=@ownerku
+  &bot=@namabot
+*/
 
-var uid = dec(
-  "uid",
-  tgUser.id
-    ? String(tgUser.id)
-    : "-"
-);
+var ROLE =
+  (qp("role") || "user")
+    .toLowerCase();
 
-var owners = dec(
-  "owners",
-  "@AveraEnv"
-).split(",")
- .map(function(s){
-   return s.trim();
- })
- .filter(Boolean);
+var UID =
+  qp("uid");
 
-var botName = dec(
-  "bot",
-  "@UbotBybabehbot"
-);
+var OWNERS =
+  qp("owners");
+
+var BOTU =
+  (qp("bot") || "")
+    .replace("@","");
+
 
 /* =========================================================
    ROLE
@@ -2941,4 +2934,4 @@ console.log(
 </script>
 
 </body>
-</html>
+          </html>
